@@ -1,5 +1,5 @@
 using ElearningSystem.Data;
-
+using ElearningSystem.ChatHubs;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // ── Services ──────────────────────────────────────────────────────────────
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -45,9 +45,10 @@ app.UseAuthorization();
 // ── Routes ────────────────────────────────────────────────────────────────
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    pattern: "{controller=Chat}/{action=Index}/{id?}");
 
-
+// ── SignalR Hub ───────────────────────────────────────────────────────────
+app.MapHub<ChatHub>("/chathub");
 
 // ── Auto-migrate on startup ───────────────────────────────────────────────
 using (var scope = app.Services.CreateScope())

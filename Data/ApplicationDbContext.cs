@@ -8,16 +8,15 @@ namespace ElearningSystem.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             
-            // Unique Email constraint for security
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
+            // Clean slate for real-time subsystem
+            modelBuilder.Entity<Message>()
+                .HasKey(m => m.MessageId);
         }
     }
 }
