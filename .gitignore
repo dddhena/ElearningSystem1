@@ -1,0 +1,36 @@
+## .NET Core
+*.user
+*.userosscache
+*.sln.docstates
+bin/
+obj/
+.vs/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+## Secrets
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+
+## Build
+[Bb]uild/
+[Rr]elease/
+x64/
+x86/
+
+## NuGet
+.nuget/
+packages/
+*.nupkg
+project.lock.json
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Databases
+*.db
