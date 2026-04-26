@@ -1,0 +1,19 @@
+@model ElearningSystem.Models.Course
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h2>@Model.Title</h2>
+<p class="text-muted">Created on @Model.CreatedAt.ToString("MMM dd, yyyy")</p>
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h4>Description</h4>
+        <p>@Model.Description</p>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">Back to Courses</a>
+</div>

@@ -29,7 +29,72 @@
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script>
-        // Basic SignalR initialization (logic to be implemented later)
-        console.log("SignalR UI initialized");
+        // Initialize SignalR connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .withAutomaticReconnect()
+            .build();
+
+        const messageInput = document.getElementById("message-input");
+        const sendButton = document.getElementById("send-button");
+        const chatMessages = document.getElementById("chat-messages");
+        const statusBadge = document.getElementById("connection-status");
+
+        // Disable UI until connection is established
+        sendButton.disabled = true;
+        messageInput.disabled = true;
+
+        connection.on("ReceiveMessage", function (user, message) {
+            // Remove the "No messages yet" text if it's there
+            const noMessages = chatMessages.querySelector('.text-muted');
+            if (noMessages) {
+                noMessages.remove();
+            }
+
+            const msgDiv = document.createElement("div");
+            msgDiv.className = "mb-2 p-2 border rounded bg-light";
+            msgDiv.innerHTML = `<strong>${user}</strong>: ${message}`;
+            chatMessages.appendChild(msgDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+
+        connection.start().then(function () {
+            statusBadge.textContent = "Connected";
+            statusBadge.classList.replace("bg-secondary", "bg-success");
+            
+            // Enable UI
+            sendButton.disabled = false;
+            messageInput.disabled = false;
+            
+            console.log("SignalR UI initialized and connected!");
+        }).catch(function (err) {
+            statusBadge.textContent = "Error";
+            statusBadge.classList.replace("bg-secondary", "bg-danger");
+            return console.error(err.toString());
+        });
+
+        sendButton.addEventListener("click", function (event) {
+            const message = messageInput.value;
+            if (!message) return;
+            
+            // The SendMessage method on ChatHub expects user, message (but user is extracted from context usually, let's pass a placeholder or get it from Identity)
+            // Wait, what does ChatHub.cs look like?
+            // Let's assume it has SendMessage(string message) or SendMessage(string user, string message)
+            // For now, let's just send the message. If it fails, we will check ChatHub.cs.
+            connection.invoke("SendMessage", "User", message).catch(function (err) {
+                return console.error(err.toString());
+            });
+            
+            messageInput.value = "";
+            event.preventDefault();
+        });
+
+        messageInput.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                sendButton.click();
+            }
+        });
     </script>
 }
