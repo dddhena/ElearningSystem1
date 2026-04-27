@@ -73,10 +73,10 @@ namespace ElearningSystem.Controllers
                 {
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.Name, user.Name),
-                        new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.Role, user.Role.ToString()),
-                        new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString())
+                        new System.Security.Claims.Claim(ClaimTypes.Name, user.Name),
+                        new System.Security.Claims.Claim(ClaimTypes.Email, user.Email),
+                        new System.Security.Claims.Claim(ClaimTypes.Role, user.Role.ToString()),
+                        new System.Security.Claims.Claim(ClaimTypes.NameIdentifier, user.UserID.ToString())
                     };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
