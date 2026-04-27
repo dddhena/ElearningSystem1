@@ -7,13 +7,11 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Services ──────────────────────────────────────────────────────────────
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -37,7 +35,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// app.UseHttpsRedirection(); // Removed for local HTTP testing
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
