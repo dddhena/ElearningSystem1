@@ -115,5 +115,52 @@ namespace ElearningSystem.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+        // POST: Course/Enroll/5
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        [ValidateAntiForgeryToken]
+        public IActionResult Enroll(int id)
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            var course = _context.Courses.FirstOrDefault(c => c.CourseId == id);
+            if (course == null) return NotFound();
+
+            var alreadyEnrolled = _context.Enrollments.Any(e => e.StudentId == userId && e.CourseId == id);
+            if (alreadyEnrolled)
+            {
+                TempData["Error"] = "You are already enrolled in this course.";
+                return RedirectToAction(nameof(Details), new { id = id });
+            }
+
+            var enrollment = new Enrollment
+            {
+                StudentId = userId,
+                CourseId = id,
+                EnrolledAt = DateTime.UtcNow
+            };
+
+            _context.Enrollments.Add(enrollment);
+            _context.SaveChanges();
+
+            TempData["Success"] = "Successfully enrolled in the course!";
+            return RedirectToAction(nameof(MyCourses));
+        }
+
+        // GET: Course/MyCourses
+        [Authorize(Roles = "Student")]
+        public IActionResult MyCourses()
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            var myCourses = _context.Enrollments
+                .Where(e => e.StudentId == userId)
+                .Select(e => e.Course)
+                .ToList();
+
+            return View(myCourses);
+        }
     }
 }

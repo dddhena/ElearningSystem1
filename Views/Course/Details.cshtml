@@ -14,6 +14,12 @@
     </div>
 </div>
 
-<div class="mt-4">
+<div class="mt-4 d-flex gap-2">
     <a asp-action="Index" class="btn btn-secondary">Back to Courses</a>
+    @if (User.IsInRole("Student"))
+    {
+        <form asp-action="Enroll" asp-route-id="@Model.CourseId" method="post">
+            <button type="submit" class="btn btn-primary">Enroll in this Course</button>
+        </form>
+    }
 </div>
