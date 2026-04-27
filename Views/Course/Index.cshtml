@@ -32,8 +32,13 @@ else
                             @(course.Description?.Length > 100 ? course.Description.Substring(0, 100) + "..." : course.Description)
                         </p>
                     </div>
-                    <div class="card-footer bg-white border-top-0">
-                        <a asp-action="Details" asp-route-id="@course.CourseId" class="btn btn-outline-primary w-100">View Details</a>
+                    <div class="card-footer bg-white border-top-0 d-flex gap-2">
+                        <a asp-action="Details" asp-route-id="@course.CourseId" class="btn btn-outline-primary flex-fill">View</a>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Instructor"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@course.CourseId" class="btn btn-outline-warning flex-fill">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@course.CourseId" class="btn btn-outline-danger flex-fill">Delete</a>
+                        }
                     </div>
                 </div>
             </div>

@@ -60,5 +60,60 @@ namespace ElearningSystem.Controllers
             }
             return View(course);
         }
+        // GET: Course/Edit/5
+        [Authorize(Roles = "Admin,Instructor")]
+        public IActionResult Edit(int id)
+        {
+            var course = _context.Courses.FirstOrDefault(c => c.CourseId == id);
+            if (course == null) return NotFound();
+            return View(course);
+        }
+
+        // POST: Course/Edit/5
+        [HttpPost]
+        [Authorize(Roles = "Admin,Instructor")]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Course course)
+        {
+            if (id != course.CourseId) return BadRequest();
+
+            if (ModelState.IsValid)
+            {
+                var existing = _context.Courses.FirstOrDefault(c => c.CourseId == id);
+                if (existing == null) return NotFound();
+
+                existing.Title = course.Title;
+                existing.Description = course.Description;
+                _context.SaveChanges();
+                TempData["Success"] = "Course updated successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(course);
+        }
+
+        // GET: Course/Delete/5
+        [Authorize(Roles = "Admin,Instructor")]
+        public IActionResult Delete(int id)
+        {
+            var course = _context.Courses.FirstOrDefault(c => c.CourseId == id);
+            if (course == null) return NotFound();
+            return View(course);
+        }
+
+        // POST: Course/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin,Instructor")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var course = _context.Courses.FirstOrDefault(c => c.CourseId == id);
+            if (course != null)
+            {
+                _context.Courses.Remove(course);
+                _context.SaveChanges();
+                TempData["Success"] = "Course deleted successfully!";
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
