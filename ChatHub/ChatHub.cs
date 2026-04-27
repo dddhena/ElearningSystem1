@@ -1,13 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ElearningSystem.ChatHubs
 {
+    [AllowAnonymous]
     public class ChatHub : Hub
     {
         public async Task SendMessage(string courseId, string content)
         {
-            // Empty method for now
-            await Task.CompletedTask;
+            var user = Context.User?.Identity?.Name ?? "Anonymous";
+            await Clients.All.SendAsync("ReceiveMessage", user, content);
         }
 
         public async Task JoinCourseGroup(string courseId)

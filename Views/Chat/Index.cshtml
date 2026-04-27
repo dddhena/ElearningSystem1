@@ -27,12 +27,15 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script>
         // Initialize SignalR connection
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/chathub")
+            .withUrl("/chathub", {
+                transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling,
+                withCredentials: true
+            })
             .withAutomaticReconnect()
+            .configureLogging(signalR.LogLevel.Information)
             .build();
 
         const messageInput = document.getElementById("message-input");
@@ -76,17 +79,13 @@
         });
 
         sendButton.addEventListener("click", function (event) {
-            const message = messageInput.value;
+            const message = messageInput.value.trim();
             if (!message) return;
-            
-            // The SendMessage method on ChatHub expects user, message (but user is extracted from context usually, let's pass a placeholder or get it from Identity)
-            // Wait, what does ChatHub.cs look like?
-            // Let's assume it has SendMessage(string message) or SendMessage(string user, string message)
-            // For now, let's just send the message. If it fails, we will check ChatHub.cs.
-            connection.invoke("SendMessage", "User", message).catch(function (err) {
+
+            connection.invoke("SendMessage", "general", message).catch(function (err) {
                 return console.error(err.toString());
             });
-            
+
             messageInput.value = "";
             event.preventDefault();
         });
